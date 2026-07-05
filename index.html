@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0F5E5A" />
+<title>Kørebog · Fælles bil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand"><b>Kørebog</b><span>Fælles bil</span></div>
+    <div class="tools">
+      <button class="btn btn-ghost" id="exportBtn">Eksportér data</button>
+      <button class="btn btn-ghost" id="importBtn">Importér data</button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+      <button class="btn btn-ghost danger" id="resetBtn">Nulstil</button>
+    </div>
+  </header>
+
+  <!-- ODOMETER -->
+  <section class="hero">
+    <div class="eyebrow">Bilens kilometertal</div>
+    <div class="odo" id="odo" aria-live="polite"></div>
+    <div class="hero-stats">
+      <div class="stat"><span class="k">Kørt i alt</span><span class="v" id="totKm">0 km</span></div>
+      <div class="stat"><span class="k">Beløb i alt</span><span class="v" id="totKr">0 kr</span></div>
+      <div class="hero-ctls">
+        <div class="price-ctl">
+          <label for="startKm">Startkilometer</label>
+          <input type="number" id="startKm" min="0" step="1" inputmode="numeric" />
+          <span class="kr">km</span>
+        </div>
+        <div class="price-ctl">
+          <label for="price">Pris pr. km</label>
+          <input type="number" id="price" min="0" step="0.01" inputmode="decimal" />
+          <span class="kr">kr</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stack">
+
+    <!-- SETTLEMENT -->
+    <section class="card">
+      <div class="card-head"><div class="eyebrow">Afregning</div></div>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th>Person</th><th class="num">Kørt</th><th class="num">Beløb</th>
+            <th class="num">Betalt til far</th><th class="num">Rest</th>
+          </tr></thead>
+          <tbody id="sumBody"></tbody>
+          <tfoot><tr>
+            <td>I alt</td>
+            <td class="num" id="fKm" data-label="Kørt">0</td>
+            <td class="num" id="fKr" data-label="Beløb">0 kr</td>
+            <td class="num" id="fPaid" data-label="Betalt til far">0 kr</td>
+            <td class="num" id="fRest" data-label="Rest">0 kr</td>
+          </tr></tfoot>
+        </table>
+      </div>
+      <p class="note-line">Når bilen tankes, sender hver person sit restbeløb til far på MobilePay og registrerer betalingen under “Betalinger til far”.</p>
+    </section>
+
+    <!-- LOG + PAYMENTS -->
+    <div class="two">
+      <!-- trips -->
+      <section class="card">
+        <div class="card-head"><div class="eyebrow">Kørselslog</div></div>
+        <form class="row" id="tripForm" autocomplete="off">
+          <div class="field"><label class="lbl" for="tDate">Dato</label>
+            <input type="date" id="tDate" required></div>
+          <div class="field"><label class="lbl" for="tPerson">Person</label>
+            <select id="tPerson" required></select></div>
+          <div class="field"><label class="lbl" for="tStart">Start km <span class="tag">auto</span></label>
+            <input type="number" id="tStart" class="auto" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label class="lbl" for="tEnd">Slut km</label>
+            <input type="number" id="tEnd" inputmode="numeric" placeholder="skriv når du stopper"></div>
+          <button type="submit" class="btn btn-primary full">Tilføj tur</button>
+        </form>
+        <div class="msg" id="tMsg"></div>
+        <div class="scroll">
+          <table>
+            <thead><tr>
+              <th>Dato</th><th>Person</th><th class="num">Start</th>
+              <th class="num">Slut</th><th class="num">Km</th><th class="num">Beløb</th><th></th>
+            </tr></thead>
+            <tbody id="tripBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- payments -->
+      <section class="card">
+        <div class="card-head"><div class="eyebrow">Betalinger til far</div></div>
+        <form class="row" id="payForm" autocomplete="off">
+          <div class="field"><label class="lbl" for="pDate">Dato</label>
+            <input type="date" id="pDate" required></div>
+          <div class="field"><label class="lbl" for="pPerson">Person</label>
+            <select id="pPerson" required></select></div>
+          <div class="field"><label class="lbl" for="pAmount">Beløb (kr)</label>
+            <input type="number" id="pAmount" min="0" step="0.01" inputmode="decimal" placeholder="0"></div>
+          <div class="field"><label class="lbl" for="pNote">Note</label>
+            <input type="text" id="pNote" placeholder="valgfri"></div>
+          <button type="submit" class="btn btn-primary full">Registrér betaling</button>
+        </form>
+        <div class="msg" id="pMsg"></div>
+        <div class="scroll">
+          <table>
+            <thead><tr>
+              <th>Dato</th><th>Person</th><th class="num">Beløb</th><th>Note</th><th></th>
+            </tr></thead>
+            <tbody id="payBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    Data gemmes lokalt i denne browser. Brug <b>Eksportér</b> som backup eller til at flytte data til en anden enhed.<br>
+    Læg filerne på GitHub og slå GitHub Pages til, så er siden online. Se README.
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
