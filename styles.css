@@ -16,7 +16,7 @@ body{
   -webkit-font-smoothing:antialiased; line-height:1.5;
   padding:0 max(16px,env(safe-area-inset-left)) 64px;
 }
-.wrap{max-width:1080px;margin:0 auto}
+.wrap{max-width:1180px;margin:0 auto}
 
 /* ---------- header ---------- */
 header{
@@ -91,12 +91,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 /* ---------- cards ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:20px}
+  box-shadow:var(--shadow);padding:20px;min-width:0}
 .card .eyebrow{color:var(--accent)}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.stack{display:grid;gap:18px;margin-top:18px}
-.two{display:grid;gap:18px;grid-template-columns:1fr}
-@media(min-width:860px){.two{grid-template-columns:1fr 1fr}}
+.stack{display:grid;gap:18px;margin-top:18px;grid-template-columns:minmax(0,1fr)}
+.two{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1200px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 
 /* ---------- tables ---------- */
 .scroll{overflow-x:auto;margin:0 -4px;-webkit-overflow-scrolling:touch}
