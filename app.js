@@ -6,7 +6,7 @@
 
   var state = { price:1, startKm:75502, trips:[], payments:[] };
 
-  // ---------- storage ----------
+
   function save(){
     try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){/* session only */}
   }
@@ -22,10 +22,9 @@
           state.payments = Array.isArray(d.payments)? d.payments : [];
         }
       }
-    }catch(e){/* start fresh */}
+    }catch(e){'New start'}
   }
 
-  // ---------- helpers ----------
   var nf = new Intl.NumberFormat("da-DK",{maximumFractionDigits:2});
   function km(n){ return nf.format(Math.round(n))+" km"; }
   function kr(n){ return nf.format(Math.round(n*100)/100)+" kr"; }
@@ -74,7 +73,6 @@
     }
   }
 
-  // ---------- computed ----------
   function totals(){
     var rows = PEOPLE.map(function(name){
       var driven = state.trips.reduce(function(a,t){
@@ -90,14 +88,14 @@
     return { rows:rows, tot:t };
   }
 
-  // ---------- render ----------
+
   function render(){
     var c = totals();
     renderOdo(currentKm());
     document.getElementById("totKm").textContent = km(c.tot.km);
     document.getElementById("totKr").textContent = kr(c.tot.owed);
 
-    // settlement
+
     document.getElementById("sumBody").innerHTML = c.rows.map(function(r){
       var pill = r.rest > 0.005
         ? '<span class="pill owe">'+kr(r.rest)+'</span>'
@@ -115,7 +113,7 @@
     document.getElementById("fPaid").textContent = kr(c.tot.paid);
     document.getElementById("fRest").textContent = kr(c.tot.rest);
 
-    // trips (newest first)
+
     var tb = document.getElementById("tripBody");
     if(!state.trips.length){
       tb.innerHTML = '<tr><td class="empty" colspan="7" data-label="">Ingen ture endnu. Tilføj den første ovenfor.</td></tr>';
@@ -134,7 +132,7 @@
       }).join("");
     }
 
-    // payments (newest first)
+
     var pb = document.getElementById("payBody");
     if(!state.payments.length){
       pb.innerHTML = '<tr><td class="empty" colspan="5" data-label="">Ingen betalinger endnu.</td></tr>';
@@ -150,7 +148,7 @@
       }).join("");
     }
 
-    // prefill next start (= last end, or baseline startKm before first trip)
+)
     var startInput = document.getElementById("tStart");
     if(document.activeElement !== startInput){
       startInput.value = currentKm();
@@ -161,14 +159,14 @@
     if(document.activeElement !== startKmInput){ startKmInput.value = state.startKm; }
   }
 
-  // ---------- toast ----------
+
   var toastEl = document.getElementById("toast"), toastT;
   function toast(msg){
     toastEl.textContent = msg; toastEl.classList.add("show");
     clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove("show"); },1900);
   }
 
-  // ---------- selects ----------
+
   function fillSelect(sel){
     sel.innerHTML = '<option value="" disabled selected>Vælg…</option>' +
       PEOPLE.map(function(p){ return '<option value="'+p+'">'+p+'</option>'; }).join("");
@@ -176,7 +174,7 @@
   fillSelect(document.getElementById("tPerson"));
   fillSelect(document.getElementById("pPerson"));
 
-  // ---------- events ----------
+
   document.getElementById("price").addEventListener("input", function(e){
     var v = parseFloat(e.target.value);
     state.price = (isFinite(v) && v>=0) ? v : 0;
@@ -246,7 +244,7 @@
     }
   });
 
-  // export / import / reset
+
   document.getElementById("exportBtn").addEventListener("click", function(){
     var blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
     var a = document.createElement("a");
@@ -283,7 +281,7 @@
     }
   });
 
-  // ---------- init ----------
+
   load();
   document.getElementById("tDate").value = today();
   document.getElementById("pDate").value = today();
